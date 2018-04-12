@@ -64,3 +64,33 @@
 
 	assert (add (3,2) [(4,1) ; (8,2)] = [(4,1) ; (8,2) ; (3,2)]) ;;
 	assert (add (4,2) [(4,1) ; (8,2)] = [(4,3) ; (8,2)]) ;;
+	
+ (* remove : supprime n occurences d'un élement e dans le multi-ensemble s. 
+ Si n est strictement supérieur au nombre d'occurence de e dans s alors toutes les occurences de e sont supprimées. *)
+
+          let rec remove ((e,n) : 'e melt) (s : 'e mset) : 'e mset =
+              if not (member e s) then s else
+                match s with
+                |[]-> []
+                |(a,b)::fin -> if a=e then (a, max (b-n) 0)::fin else (a,b)::remove (e,n) fin ;;
+
+            assert (remove (3,5) [(3,4)] = [(3,0)]) ;;
+	    
+ (* equal : verifie que s1 et s2 contiennent les mêmes élements en même nombre *)
+
+            let equal ( s1 : 'e mset) (s2 : 'e mset) : bool =
+              (subset s1 s2) && (subset s2 s1) ;;
+
+
+      assert ([(3,1);(4,3)] = [(3,2);(4,3)]);;
+
+        (* sum : aditionne dans un multi ensemble tout les element de s1 et s2 *)
+
+      let rec sum (s1 : 'e mset) (s2 : 'e mset) :  'e mset =
+        match s1 with
+        |[]-> []
+        |(a,b)::fin -> sum fin (add (a,b) s2);;
+
+
+        assert (sum [(3,2)] [(5,8)] = [(3,2);(5,8)]);;
+
