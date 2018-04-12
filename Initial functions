@@ -88,9 +88,8 @@
 
       let rec sum (s1 : 'e mset) (s2 : 'e mset) :  'e mset =
         match s1 with
-        |[]-> []
+        |[]-> s2
         |(a,b)::fin -> sum fin (add (a,b) s2);;
-
 
         assert (sum [(3,2)] [(5,8)] = [(3,2);(5,8)]);;
 
