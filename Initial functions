@@ -82,7 +82,7 @@
               (subset s1 s2) && (subset s2 s1) ;;
 
 
-      assert ([(3,1);(4,3)] = [(3,2);(4,3)]);;
+      assert ( equal [(3,1);(4,3)] [(3,2);(4,3)] = false);;
 
         (* sum : aditionne dans un multi ensemble tout les element de s1 et s2 *)
 
