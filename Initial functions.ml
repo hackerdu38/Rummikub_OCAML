@@ -10,7 +10,7 @@
   		s = [] ;;
 
   	assert (isempty [(3,2) ; (4,2)] = false);;
-  	assrt (isempty [] = true) ;;
+  	assert (isempty [] = true) ;;
 
 
 (*cardinal : donne le nombre total d'arguments d'un multi-ensemble*)
@@ -20,7 +20,7 @@
     		|[] -> 0
     		|(a,b)::fin -> b + cardinal fin ;;
 
-	assert (cardinal [(3,2) ; (4,2)] = 2) ;;
+	assert (cardinal [(3,2) ; (4,2)] = 4) ;;
 
 
 (*nb_occurences : donne le nombre d'occurence d'un element dans un multi-ensemble*)
@@ -41,6 +41,7 @@
 	  |(c,b)::fin -> if a = c then true else member a fin ;;
 
 	  assert (member 5  [(3,2) ; (4,2)] = false) ;;
+	  assert (member 4  [(3,2) ; (4,2)] = true) ;;
 
 
 (*subset : verifie si un multi-ensemble est inclus ou egal a un deuxieme*)
@@ -83,12 +84,60 @@
 
       assert ( equal [(3,1);(4,3)] [(3,2);(4,3)] = false);;
 
-        (* sum : aditionne dans un multi ensemble tout les element de s1 et s2 *)
+(* sum : aditionne dans un multi ensemble tout les element de s1 et s2 *)
 
       let rec sum (s1 : 'e mset) (s2 : 'e mset) :  'e mset =
         match s1 with
         |[]-> s2
         |(a,b)::fin -> sum fin (add (a,b) s2);;
 
-        assert (sum [(3,2)] [(5,8)] = [(3,2);(5,8)]);;
+        assert (sum [(3,2)] [(5,8)] = [(5,8);(3,2)]);;
 
+(* intersection : intersection de deux ensembles *)
+
+	let rec intersection (s1 : 'e mset) (s2 : 'e mset) : 'e mset=
+	  match s1 with
+	  |[]-> []
+	  |(a,b)::fin -> if (member a s2)
+			 then
+			   if b > ( nb_occurences a s2)
+			   then (a, nb_occurences a s2):: intersection fin s2
+			   else (a,b)::intersection fin s2
+			 else intersection fin s2;;
+	  assert ( intersection [(1,2);(3,4)] [(1,3);(5,1)]=[(1,2)]);;
+
+
+(* difference : ensemble privé d'un autre ensemble*)
+
+
+	  let rec difference (s1 : 'e mset) (s2 : 'e mset) : 'e mset=
+	    match s1 with
+	    |[]-> []
+	    |(a,b)::fin -> if not(member a s2)
+			   then (a,b)::difference fin s2
+			   else
+			     if (nb_occurences a s2)>= b
+			     then difference fin s2
+			     else (a,(b-(nb_occurences a s2)))::difference fin s2;;
+
+
+	    assert (difference [(1,2); (3,4); (7,1)] [(1,3); (3,1);(6,5)] = [(3,3) ; (7,1)]);;
+
+
+(*getrandom : donne un element au hasard dans le multi-ensemble*)
+	      (*get : donne le nième element de s*)
+
+	   
+	 let rec get (n : int) (s : 'e mset) : 'e=
+	   match s with
+	   |[]-> failwith "pas d'elements"
+	   |(a,b)::fin ->  if ( b >= n ) then a else get (n-b) fin;;
+		 
+	   assert (get 2 [(1,2);(3,4)] = 1);;
+
+
+
+	   let rec getrandom ( s : 'e mset) : 'e=
+	     let aleat= Random.int ((cardinal s)+1) in get aleat s;;
+
+	    getrandom [(1,2);(3,6);(5,3)];;
