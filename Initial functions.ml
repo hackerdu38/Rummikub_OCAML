@@ -153,15 +153,12 @@
 	      fold_mset (fun x (c,d) -> x+d ) 0 s;;
 
 assert (cardinal2 [(1,2);(3,4)] = 6);;
-
-  let fold_mset2 (f : 'b -> ('i*'i) -> 'b) (a : 'b) (s : 'e mset) : 'c=
-	      List.fold_left f a s;;
   
    let f  (x : bool) ((c,d) : int*int) (s1 : 'e mset) (s2 : 'e mset) : bool =
      (((nb_occurences c s2) <= d)) && x;;
 
 	   let subset2 (s1 : 'e mset) (s2 : 'e mset) : bool=
- 	     fold_mset2 f true s1;;
+ 	     fold_mset (fun x (c,d) -> (((nb_occurences c s2) >= d)) && x) true s1;;
 
 
 	     assert (subset2 [(1,1)] [(1,2)] = true);;
