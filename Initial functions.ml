@@ -141,3 +141,31 @@
 	     let aleat= Random.int ((cardinal s)+1) in get aleat s;;
 
 	    getrandom [(1,2);(3,6);(5,3)];;
+
+
+
+
+	    let fold_mset (f : 'b -> ('i*'i) -> 'b) (a : 'b) (s : 'e mset) : 'c=
+	      List.fold_left f a s;;
+
+
+	  let cardinal2 (s : 'e mset) : 'a=
+	      fold_mset (fun x (c,d) -> x+d ) 0 s;;
+
+assert (cardinal2 [(1,2);(3,4)] = 6);;
+
+  let fold_mset2 (f : 'b -> ('i*'i) -> 'b) (a : 'b) (s : 'e mset) : 'c=
+	      List.fold_left f a s;;
+  
+   let f  (x : bool) ((c,d) : int*int) (s1 : 'e mset) (s2 : 'e mset) : bool =
+     (((nb_occurences c s2) <= d)) && x;;
+
+	   let subset2 (s1 : 'e mset) (s2 : 'e mset) : bool=
+ 	     fold_mset2 f true s1;;
+
+
+	     assert (subset2 [(1,1)] [(1,2)] = true);;
+	       assert (subset2 [(1,2)] [(1,1)] = false);;
+	       assert (subset2 [(1,2)] [(3,1)] = false);;
+  
+	       
