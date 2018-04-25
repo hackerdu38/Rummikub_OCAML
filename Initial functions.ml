@@ -142,27 +142,36 @@
 
 	    getrandom [(1,2);(3,6);(5,3)];;
 
+ (*ORDRE SUPERIEUR*)
 
 
+let fold_mset (f : 'b -> ('i*'i) -> 'b) (a : 'b) (s : 'e mset) : 'c=
+    List.fold_left f a s;;
 
-	    let fold_mset (f : 'b -> ('i*'i) -> 'b) (a : 'b) (s : 'e mset) : 'c=
-	      List.fold_left f a s;;
+
+let cardinal2 (s : 'e mset) : 'a=
+    fold_mset (fun x (c,d) -> x+d ) 0 s;;
+
+    assert (cardinal2 [(1,2);(3,4)] = 6);;
+ 
+
+let subset2 (s1 : 'e mset) (s2 : 'e mset) : bool=
+    fold_mset (fun x (c,d) ->  (((nb_occurences c s2) >= d)) && x) true s1;;
 
 
-	  let cardinal2 (s : 'e mset) : 'a=
-	      fold_mset (fun x (c,d) -> x+d ) 0 s;;
+    assert (subset2 [(1,1)] [(1,2)] = true);;
+    assert (subset2 [(1,2)] [(1,1)] = false);;
+    assert (subset2 [(1,2)] [(3,1)] = false);;
 
-assert (cardinal2 [(1,2);(3,4)] = 6);;
+let sum2 (s1 : 'e mset) (s2 : 'e mset) : 'e mset=
+    (fold_mset (fun x (c,d) -> ((c,(d + (nb_occurences c s2)))::x)) [] s1)@(fold_mset ( fun x (e,f) -> (if not(member e s1) then (e,f)::x else x)) [] s2);;
   
-   let f  (x : bool) ((c,d) : int*int) (s1 : 'e mset) (s2 : 'e mset) : bool =
-     (((nb_occurences c s2) <= d)) && x;;
+     assert (sum2 [(1,2)] [(1,1)] = [(1,3)]);;
+     assert (sum2 [(1,2)] [(3,4)] = [(1,2) ; (3,4)]);;
+	 
+let intersection2 (s1 : 'e mset) (s2 : 'e mset): 'e  mset=
+    fold_mset ( fun x (c,d) -> if (member c s2) then ( if ((nb_occurences c s2)>d) then ((c,d)::x) else ((c,(nb_occurences c s2))::x)) else x) [] s1;;
 
-	   let subset2 (s1 : 'e mset) (s2 : 'e mset) : bool=
- 	     fold_mset (fun x (c,d) -> (((nb_occurences c s2) >= d)) && x) true s1;;
+    assert ( intersection2 [(1,2);(3,4)] [(1,3);(5,1)]=[(1,2)]);;
 
-
-	     assert (subset2 [(1,1)] [(1,2)] = true);;
-	       assert (subset2 [(1,2)] [(1,1)] = false);;
-	       assert (subset2 [(1,2)] [(3,1)] = false);;
-  
 	       
