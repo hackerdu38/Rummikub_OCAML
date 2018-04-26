@@ -207,33 +207,161 @@ Cons (T(1,Rouge), 2) (Cons (T(2,Rouge), 2) (Cons (T(3,Rouge), 2) (Cons (T(4,Roug
 ))))))))))))))))))))))))))))))))))))))))))))))))))) ;;
 
 
+ (* 4 - Répresentation des données *)
+
+type couleur = Bleu | Rouge | Jaune | Noir ;;
+type tuile = T of (int * couleur) | Joker ;;
+
+type combinaison = tuile list ;;
+
+type table = combinaison list ;;
+type pose = combinaison list ;;
+
+type main = tuile mset ;;
+type pioche = tuile mset ;;
+
+let (paquet_initial : pioche) =
+Cons (T(1,Rouge), 2) (Cons (T(2,Rouge), 2) (Cons (T(3,Rouge), 2) (Cons (T(4,Rouge), 2)
+(Cons (T(5,Rouge), 2) (Cons (T(6,Rouge), 2) (Cons (T(7,Rouge), 2) (Cons (T(8,Rouge), 2)
+(Cons (T(9,Rouge), 2) (Cons (T(10,Rouge), 2) (Cons (T(11,Rouge), 2) (Cons (T(12,Rouge), 2)
+(Cons (T(13,Rouge), 2)
+(Cons (T(1,Bleu), 2) (Cons (T(2,Bleu), 2) (Cons (T(3,Bleu), 2) (Cons (T(4,Bleu), 2)
+(Cons (T(5,Bleu), 2) (Cons (T(6,Bleu), 2) (Cons (T(7,Bleu), 2) (Cons (T(8,Bleu), 2)
+(Cons (T(9,Bleu), 2) (Cons (T(10,Bleu), 2) (Cons (T(11,Bleu), 2) (Cons (T(12,Bleu), 2)
+(Cons (T(13,Bleu), 2)
+(Cons (T(1,Jaune), 2) (Cons (T(2,Jaune), 2) (Cons (T(3,Jaune), 2) (Cons (T(4,Jaune), 2)
+(Cons (T(5,Jaune), 2) (Cons (T(6,Jaune), 2) (Cons (T(7,Jaune), 2) (Cons (T(8,Jaune), 2)
+(Cons (T(9,Jaune), 2) (Cons (T(10,Jaune), 2) (Cons (T(11,Jaune), 2) (Cons (T(12,Jaune), 2)
+(Cons (T(13,Jaune), 2)
+(Cons (T(1,Noir), 2) (Cons (T(2,Noir), 2) (Cons (T(3,Noir), 2) (Cons (T(4,Noir), 2)
+(Cons (T(5,Noir), 2) (Cons (T(6,Noir), 2) (Cons (T(7,Noir), 2) (Cons (T(8,Noir), 2)
+(Cons (T(9,Noir), 2) (Cons (T(10,Noir), 2) (Cons (T(11,Noir), 2) (Cons (T(12,Noir), 2)
+(Cons (T(13,Noir), 2) (Cons (Joker, 2) Nil)
+))))))))))))))))))))))))))))))))))))))))))))))))))) ;;
+
+
 (* 5 - Mise en oeuvre des régles 
 
 5.1 - Validité de combinaison *)
 
 (* suite_valide : détermine si la combinaison est une suite : au moins 3 tuiles de même couleur et de valeurs qui se suivent *)
 
-let rec suite_valide (comb : combinaison) : bool =
-  let a =  0 in 
+
+let suite_valide (comb : combinaison) : bool =
   match comb with
   |[] -> false
-  |T(nb,couleur)::fin  -> if fin = T(nb+1,couleur)::fin
-			  then a = a + 1 
-			  else false
-                          if a = 3
-                          then true
-			  else
-			     suite_valide fin;;
-			 
-(* Ca ne marche pas : 
-                            if a = 3
-                            ^^
-Error: Syntax error *)
+  |T(nb,couleur)::T(n,c)::T(nbx,co)::fin  -> (c=couleur && c=co && (n=nb+1 && nbx=nb+2 || n=nb-1 && nbx=nb-2))
+  |Joker::T(n,c)::T(nbx,co)::fin  -> (c=co &&  nbx=n+1 ||nbx=n-1)
+  |T(nb,couleur)::Joker::T(nbx,co)::fin  -> (couleur=co &&  nbx=nb+2 ||nbx=nb-2)
+  |T(nb,couleur)::T(n,c)::Joker::fin -> (couleur=c &&  n=nb+1 ||n=nb-1);;
 
-  assert ([T(1,Rouge) ; T(2,Rouge) ; T(3,Rouge)] = true);;
+
+(*let suite_valide (comb : combinaison) : bool =
+  match comb with
+  |[] -> false
+  |T(nb,couleur)::fin  -> match fin with
+			  |[] -> false
+			  |T(n,c)::fini -> match fini with
+					   |[]-> false
+					   |T(nbx,co)::fi -> (c=couleur && c=co && (n=nb+1 && nbx=nb+2 || n=nb-1 && nbx=nb-2));;
+
+Ne prenait pas en compte les Joker*)
+						 
+ assert (suite_valide [T(1,Rouge) ; T(2,Rouge) ; T(3,Rouge)] = true);;
+
 
     (* groupe valide : détermine si la combinaison est un groupe, càd au moins trois tuiles de même valeur et de même couleur *)
 
-  let rec groupe_valide (comb : combinaison) : bool =
-   
+  
+let groupe_valide (comb : combinaison) : bool =
+  match comb with
+  |[] -> false
+  |T(nb,couleur)::T(n,c)::T(nbx,co)::fin  -> (c!=couleur && c!=co && couleur !=co && (n=nb && n=nbx))
+  |Joker::T(n,c)::T(nbx,co)::fin  -> (c!=co &&  nbx=n)
+  |T(nb,couleur)::Joker::T(nbx,co)::fin  -> (couleur!=co &&  nbx=nb)
+  |T(nb,couleur)::T(n,c)::Joker::fin -> (couleur!=c &&  n=nb);;
+
+
+  assert ( combinaison_valide [T(1,Rouge) ; T(1,Bleu) ; T(1,Noir)] = true);;
+
+  (* combinaison_valide : combinaison valide = groupe valide ou suite valide *)
+    
+  let combinaison_valide (comb:combinaison) : bool =
+    ( suite_valide comb) || (groupe_valide comb);;
+
+
+  let rec proposition_valide (c: combinaison list) : bool=
+    match c with
+    |[] -> false
+    |a::fin -> if combinaison_valide a then proposition_valide fin else false;;
+
+
+
+
+
+
+
+    (* List.fold_left ( fun x [a] -> combinaison_valide [a] && x) true c;;*)
+
+    assert (proposition_valide [[T(1,Rouge);T(2,Rouge);T(3,Rouge)];[T(1,Noir);T(2,Noir);T(3,Noir)]]= false);;
+	   
+
+
+    (* 5.2 - Calcul de points *)
+
+  (* points_suitegroupe : renvoie le nombre de points de la suite ou du groupe passé en argument
+     On a réuni points_suite et points_groupe *)
+    
+  let rec points_suitegroupe (c : combinaison) : int =
+    match c with
+    |[] -> 0
+    |T(a,b)::fin -> a + points_suitegroupe fin
+    |Joker::fin -> points_suitegroupe fin;;
+
+    assert (points_suitegroupe [T(1,Rouge) ; T(1,Bleu) ; T(1,Noir)] = 3 );;
+
+    (* lespoints : renvoie le nombre de points d'une pose *)
+
+    let rec lespoints (p : pose) :int =
+      match p with
+      |[] -> 0
+      |c::fin -> if suite_valide c || groupe_valide c then points_suitegroupe c + lespoints fin  else 0 ;;
+
+      assert( lespoints [[T(1,Noir) ; T(2,Noir) ; T(3,Noir)] ; [T(1,Rouge) ; T(1,Bleu) ; T(1,Noir)]] = 9);;
+
+
+
+
+	(* 6 - Etat d'une partie *)
+
+	
+type joueur = J1 | J2 ;;
+type statutjoueur = (joueur * bool * main) ;;
+type les_statuts = statutjoueur * statutjoueur ;;
+type etat = les_statuts * table * pioche * joueur ;;
+  
+let joueur_courant : etat -> joueur
+let la_table : etat -> table
+let la_pioche : etat -> pioche
+let joueur_suivant : etat -> joueur
+let le_statut : joueur -> etat -> statutjoueur
+let la_main : joueur -> etat -> main
+
+
+
+let rec ajoute_fin (liste)(e : tuile melt) =
+  match liste with
+  |[] -> [e]
+  | p::fin -> p::ajoute_fin fin e;;
+
+let  rec ordre_couleur (t : tuile mset): tuile mset= 
+   match t with
+    |[] -> []
+    |(T(nb,c),n)::fin ->  if (c=Bleu)then (T(nb,c),n)::s1 and ordre_couleur fin
+			  else if (c=Rouge) then ajoute_fin s1 (T(nb,c),n) and ordre_couleur fin
+			  else ordre_couleur fin;; 
+
+				  
+let en_ordre (t :  tuile mset) :  tuile mset =
+  
 	       
