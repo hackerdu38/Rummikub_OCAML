@@ -174,4 +174,66 @@ let intersection2 (s1 : 'e mset) (s2 : 'e mset): 'e  mset=
 
     assert ( intersection2 [(1,2);(3,4)] [(1,3);(5,1)]=[(1,2)]);;
 
+(* 4 - Répresentation des données *)
+
+type couleur = Bleu | Rouge | Jaune | Noir ;;
+type tuile = T of (int * couleur) | Joker ;;
+
+type combinaison = tuile list ;;
+
+type table = combinaison list ;;
+type pose = combinaison list ;;
+
+type main = tuile mset ;;
+type pioche = tuile mset ;;
+
+let (paquet_initial : pioche) =
+Cons (T(1,Rouge), 2) (Cons (T(2,Rouge), 2) (Cons (T(3,Rouge), 2) (Cons (T(4,Rouge), 2)
+(Cons (T(5,Rouge), 2) (Cons (T(6,Rouge), 2) (Cons (T(7,Rouge), 2) (Cons (T(8,Rouge), 2)
+(Cons (T(9,Rouge), 2) (Cons (T(10,Rouge), 2) (Cons (T(11,Rouge), 2) (Cons (T(12,Rouge), 2)
+(Cons (T(13,Rouge), 2)
+(Cons (T(1,Bleu), 2) (Cons (T(2,Bleu), 2) (Cons (T(3,Bleu), 2) (Cons (T(4,Bleu), 2)
+(Cons (T(5,Bleu), 2) (Cons (T(6,Bleu), 2) (Cons (T(7,Bleu), 2) (Cons (T(8,Bleu), 2)
+(Cons (T(9,Bleu), 2) (Cons (T(10,Bleu), 2) (Cons (T(11,Bleu), 2) (Cons (T(12,Bleu), 2)
+(Cons (T(13,Bleu), 2)
+(Cons (T(1,Jaune), 2) (Cons (T(2,Jaune), 2) (Cons (T(3,Jaune), 2) (Cons (T(4,Jaune), 2)
+(Cons (T(5,Jaune), 2) (Cons (T(6,Jaune), 2) (Cons (T(7,Jaune), 2) (Cons (T(8,Jaune), 2)
+(Cons (T(9,Jaune), 2) (Cons (T(10,Jaune), 2) (Cons (T(11,Jaune), 2) (Cons (T(12,Jaune), 2)
+(Cons (T(13,Jaune), 2)
+(Cons (T(1,Noir), 2) (Cons (T(2,Noir), 2) (Cons (T(3,Noir), 2) (Cons (T(4,Noir), 2)
+(Cons (T(5,Noir), 2) (Cons (T(6,Noir), 2) (Cons (T(7,Noir), 2) (Cons (T(8,Noir), 2)
+(Cons (T(9,Noir), 2) (Cons (T(10,Noir), 2) (Cons (T(11,Noir), 2) (Cons (T(12,Noir), 2)
+(Cons (T(13,Noir), 2) (Cons (Joker, 2) Nil)
+))))))))))))))))))))))))))))))))))))))))))))))))))) ;;
+
+
+(* 5 - Mise en oeuvre des régles 
+
+5.1 - Validité de combinaison *)
+
+(* suite_valide : détermine si la combinaison est une suite : au moins 3 tuiles de même couleur et de valeurs qui se suivent *)
+
+let rec suite_valide (comb : combinaison) : bool =
+  let a =  0 in 
+  match comb with
+  |[] -> false
+  |T(nb,couleur)::fin  -> if fin = T(nb+1,couleur)::fin
+			  then a = a + 1 
+			  else false
+                          if a = 3
+                          then true
+			  else
+			     suite_valide fin;;
+			 
+(* Ca ne marche pas : 
+                            if a = 3
+                            ^^
+Error: Syntax error *)
+
+  assert ([T(1,Rouge) ; T(2,Rouge) ; T(3,Rouge)] = true);;
+
+    (* groupe valide : détermine si la combinaison est un groupe, càd au moins trois tuiles de même valeur et de même couleur *)
+
+  let rec groupe_valide (comb : combinaison) : bool =
+   
 	       
