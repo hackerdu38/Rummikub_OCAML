@@ -301,7 +301,8 @@ let groupe_valide (comb : combinaison) : bool =
 
 
 
-    (* List.fold_left ( fun x [a] -> combinaison_valide [a] && x) true c;;*)
+    (* let rec proposition_valide (c: combinaison list) : bool=
+           List.fold_left ( fun x [a] -> combinaison_valide [a] && x) true c;;*)
 
     assert (proposition_valide [[T(1,Rouge);T(2,Rouge);T(3,Rouge)];[T(1,Noir);T(2,Noir);T(3,Noir)]]= false);;
 	   
@@ -340,28 +341,5 @@ type statutjoueur = (joueur * bool * main) ;;
 type les_statuts = statutjoueur * statutjoueur ;;
 type etat = les_statuts * table * pioche * joueur ;;
   
-let joueur_courant : etat -> joueur
-let la_table : etat -> table
-let la_pioche : etat -> pioche
-let joueur_suivant : etat -> joueur
-let le_statut : joueur -> etat -> statutjoueur
-let la_main : joueur -> etat -> main
-
-
-
-let rec ajoute_fin (liste)(e : tuile melt) =
-  match liste with
-  |[] -> [e]
-  | p::fin -> p::ajoute_fin fin e;;
-
-let  rec ordre_couleur (t : tuile mset): tuile mset= 
-   match t with
-    |[] -> []
-    |(T(nb,c),n)::fin ->  if (c=Bleu)then (T(nb,c),n)::s1 and ordre_couleur fin
-			  else if (c=Rouge) then ajoute_fin s1 (T(nb,c),n) and ordre_couleur fin
-			  else ordre_couleur fin;; 
-
-				  
-let en_ordre (t :  tuile mset) :  tuile mset =
   
 	       
