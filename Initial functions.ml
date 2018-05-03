@@ -292,19 +292,14 @@ let groupe_valide (comb : combinaison) : bool =
 
   let rec proposition_valide (c: combinaison list) : bool=
     match c with
-    |[] -> false
+    |[] -> true
     |a::fin -> if combinaison_valide a then proposition_valide fin else false;;
-
-
-
-
-
 
 
     (* let rec proposition_valide (c: combinaison list) : bool=
            List.fold_left ( fun x [a] -> combinaison_valide [a] && x) true c;;*)
 
-    assert (proposition_valide [[T(1,Rouge);T(2,Rouge);T(3,Rouge)];[T(1,Noir);T(2,Noir);T(3,Noir)]]= false);;
+    assert (proposition_valide [[T(1,Rouge);T(2,Rouge);T(3,Rouge)];[T(1,Noir);T(2,Noir);T(3,Noir)]]= true);;
 	   
 
 
